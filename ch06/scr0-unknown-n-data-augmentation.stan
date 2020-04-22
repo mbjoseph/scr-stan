@@ -70,7 +70,27 @@ model {
   target += sum(loglik);
 }
 
+
 generated quantities {
-  // TODO: estimate posterior prob of all zero, given z = 1
-  // TODO: estimate N
+  int<lower = n_nonzero_histories, upper = M> N;
+  
+  {
+    matrix[n_grid, n_trap] p = inv_logit(logit_p);
+    vector[n_zero_histories] lp_present;
+    int z_aug[n_zero_histories];
+    vector[n_grid] tmp;
+
+    for (i in 1:n_zero_histories) {
+      for (j in 1:n_grid) {
+        tmp[j] = binomial_logit_lpmf(y[n_nonzero_histories + i, ] | n_occasion, logit_p[j, ]);
+      }
+
+      // lp_present is [z=1][y=0 | z=1] / [y=0] on a log scale
+      lp_present[i] = log_psi + log_sum_exp(tmp) - log_n_grid
+                      - log_sum_exp(log_psi + log_sum_exp(tmp) - log_n_grid, 
+                                    log1m_psi);
+      z_aug[i] = bernoulli_rng(exp(lp_present[i]));
+    }
+    N = n_nonzero_histories + sum(z_aug);
+  }
 }

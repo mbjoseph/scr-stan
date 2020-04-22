@@ -15,11 +15,11 @@ stan_d <- list(
   xlim = data$xlim, 
   ylim = data$ylim,
   X = data$traplocs, 
-  y = y
+  y = y, 
+  n_aug = n_aug
 )
 
 m_init <- stan_model("ch05/scr0-data-augmentation.stan")
-m_fit <- sampling(m_init,  
-                  data = stan_d)
-traceplot(m_fit, pars = c("alpha1", "alpha0", "psi"))
-print(m_fit, pars = c("alpha1", "alpha0", "psi"))
+m_fit <- sampling(m_init, data = stan_d)
+traceplot(m_fit, pars = c("alpha1", "alpha0", "psi", "N"))
+print(m_fit, pars = c("alpha1", "alpha0", "psi", "N"))

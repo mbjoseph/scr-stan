@@ -28,7 +28,7 @@ stan_d <- list(n_nonzero_histories = nrow(y_obs),
                y = y_obs, 
                n0scale = 200)
 
-m_init <- stan_model("ch07/bears-exponential-encounter-fn.stan")
+m_init <- stan_model("ch07/exponential-encounter-fn.stan")
 m_fit <- sampling(m_init, data = stan_d, iter = 200)
 traceplot(m_fit, pars = c("alpha1", "alpha0", "N"))
 

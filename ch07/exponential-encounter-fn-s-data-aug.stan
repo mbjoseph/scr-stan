@@ -28,16 +28,16 @@ transformed parameters {
   matrix[M, 2] s = append_col(s1, s2);
   
   {
-    matrix[M, n_trap] sq_dist;
+    matrix[M, n_trap] dist_to_trap;
     matrix[M, n_trap] log_p;
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
-        sq_dist[i, j] = squared_distance(s[i, ], X[j, ]);
+        dist_to_trap[i, j] = distance(s[i, ], X[j, ]);
       }
     }
     
-    log_p = log_inv_logit(alpha0) - alpha1 * sq_dist;
+    log_p = log_inv_logit(alpha0) - alpha1 * dist_to_trap;
     logit_p = log_p - log1m_exp(log_p);
   }
 }
@@ -63,24 +63,28 @@ model {
 }
 
 generated quantities {
-  int<lower = n_obs, upper = M> N;
+  int N;
   
   {
     matrix[M, n_trap] p = inv_logit(logit_p);
-    vector[n_aug] lp_present;
-    int z_aug[n_aug];
+    vector[M] lp_present; // [z=1][y=0 | z=1] / [y=0] on a log scale
+    int z[M];
 
-    for (i in 1:n_aug) {
-      // lp_present is [z=1][y=0 | z=1] / [y=0] on a log scale
-      lp_present[i] = bernoulli_lpmf(1 | psi) 
-                      + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ])
-                      - log_sum_exp(
-                        bernoulli_lpmf(1 | psi) 
-                        + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]), 
-                        bernoulli_lpmf(0 | psi)
-                      );
-      z_aug[i] = bernoulli_rng(exp(lp_present[i]));
+    for (i in 1:M) {
+      if (sum(y[i, ]) > 0) {
+        lp_present[i] = 0;
+        z[i] = 1;
+      } else {
+        lp_present[i] = bernoulli_lpmf(1 | psi) 
+                        + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ])
+                        - log_sum_exp(
+                          bernoulli_lpmf(1 | psi) 
+                          + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]), 
+                          bernoulli_lpmf(0 | psi)
+                        );
+        z[i] = bernoulli_rng(exp(lp_present[i]));
+      }
     }
-    N = n_obs + sum(z_aug);
+    N = sum(z);
   }
 }
