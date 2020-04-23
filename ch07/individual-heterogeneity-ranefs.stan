@@ -38,15 +38,15 @@ transformed parameters {
   vector[M] lp_if_present;
   
   {
-    matrix[M, n_trap] dist_to_trap;
+    matrix[M, n_trap] sq_dist;
     matrix[M, n_trap] log_p;
     matrix[M, n_trap] logit_p;
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
-        dist_to_trap[i, j] = distance(s[i, ], X[j, ]);
+        sq_dist[i, j] = squared_distance(s[i, ], X[j, ]);
         log_p[i, j] = log_inv_logit(mu_alpha0 + z_alpha0[i] * sd_alpha0) 
-                         - alpha1 * dist_to_trap[i, j];
+                         - alpha1 * sq_dist[i, j];
         logit_p[i, j] = log_p[i, j] - log1m_exp(log_p[i, j]);
       }
         lp_if_present[i] = bernoulli_lpmf(1 | psi)

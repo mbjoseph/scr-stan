@@ -47,14 +47,14 @@ transformed parameters {
   
   { // begin temporary scope
     matrix[n_trap, n_occasion] logit_p[M];
-    matrix[M, n_trap] dist_to_trap;
+    matrix[M, n_trap] sq_dist;
     real log_p;
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
-        dist_to_trap[i, j] = distance(s[i, ], X[j, ]);
+        sq_dist[i, j] = squared_distance(s[i, ], X[j, ]);
         for (k in 1:n_occasion) {
-          log_p = log_inv_logit(alpha0[k]) - alpha1 * dist_to_trap[i, j];
+          log_p = log_inv_logit(alpha0[k]) - alpha1 * sq_dist[i, j];
           logit_p[i, j, k] = log_p - log1m_exp(log_p);
         }
       }

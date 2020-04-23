@@ -43,16 +43,16 @@ transformed parameters {
   vector[M] lp_if_present;
   
   {
-    matrix[M, n_trap] dist_to_trap;
+    matrix[M, n_trap] sq_dist;
     matrix[n_trap, 2] log_p[M]; // last dim corresponds to sex
     matrix[n_trap, 2] logit_p[M];
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
-        dist_to_trap[i, j] = distance(s[i, ], X[j, ]);
+        sq_dist[i, j] = squared_distance(s[i, ], X[j, ]);
         for (k in 1:2) {
           log_p[i, j, k] = log_inv_logit(alpha0[k]) 
-                           - alpha1[k] * dist_to_trap[i, j];
+                           - alpha1[k] * sq_dist[i, j];
           logit_p[i, j, k] = log_p[i, j, k] - log1m_exp(log_p[i, j, k]);
         }
       }
