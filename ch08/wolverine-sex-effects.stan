@@ -91,13 +91,7 @@ model {
   alpha1 ~ normal(0, 3);
   
   // likelihood
-  for (i in 1:M) {
-    if (observed[i]) {
-      target += lp_if_present[i];
-    } else {
-      target += log_sum_exp(lp_if_present[i], bernoulli_lpmf(0 | psi));
-    }
-  }
+  target += sum(log_lik);
 }
 
 
