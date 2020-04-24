@@ -1,12 +1,10 @@
 
 data {
   int<lower = 1> M;
-  int<lower = 0> n_aug;
-  int<lower = 0, upper = M> n_obs;
   int<lower = 1> n_trap;
-  int<lower = 1> n_occasion[n_trap];
+  int<lower = 1> n_occasion;
   matrix[n_trap, 2] X;
-  int<lower = 0> y[M, n_trap];
+  int<lower = 1, upper = n_trap + 1> y[M, n_occasion];
   vector[2] xlim;
   vector[2] ylim;
 }
@@ -15,7 +13,7 @@ transformed data {
   int<lower = 0, upper = 1> observed[M];
 
   for (i in 1:M) {
-    if (sum(y[i, ]) > 0) {
+    if (min(y[i, ]) < (n_trap + 1)) {
       observed[i] = 1;
     } else {
       observed[i] = 0;
@@ -37,21 +35,17 @@ transformed parameters {
   vector[M] log_lik;
   
   {
-    matrix[M, n_trap] sq_dist;
-    matrix[M, n_trap] log_p;
-    matrix[M, n_trap] logit_p;
+    matrix[M, n_trap] dist;
+    matrix[M, n_trap + 1] log_odds; // last element is "not detected"
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
-        sq_dist[i, j] = squared_distance(s[i, ], X[j, ]);
-        log_p[i, j] = log_inv_logit(alpha0) - alpha1 * sq_dist[i, j];
-        logit_p[i, j] = log_p[i, j] - log1m_exp(log_p[i, j]);
+        dist[i, j] = distance(s[i, ], X[j, ]);
+        log_odds[i, j] = alpha0 - alpha1 * dist[i, j];
       }
+      log_odds[i, n_trap + 1] = 0;
       lp_if_present[i] = bernoulli_lpmf(1 | psi)
-        + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]);
-    }
-    
-    for (i in 1:M) {
+        + categorical_logit_lpmf(y[i, ] | to_vector(log_odds[i, ]));
       if (observed[i]) {
         log_lik[i] = lp_if_present[i];
       } else {

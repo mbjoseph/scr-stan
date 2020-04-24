@@ -1,10 +1,10 @@
 
 data {
   int<lower = 1> M;
-  int<lower = 0> n_aug;
+  int<lower = 0, upper = M> n_aug;
   int<lower = 0, upper = M> n_obs;
   int<lower = 1> n_trap;
-  int<lower = 1> n_occasion[n_trap];
+  int<lower = 1> n_occasion;
   matrix[n_trap, 2] X;
   int<lower = 0> y[M, n_trap];
   vector[2] xlim;
@@ -13,6 +13,7 @@ data {
 
 transformed data {
   int<lower = 0, upper = 1> observed[M];
+  real log_n_occasion = log(n_occasion);
 
   for (i in 1:M) {
     if (sum(y[i, ]) > 0) {
@@ -38,17 +39,15 @@ transformed parameters {
   
   {
     matrix[M, n_trap] sq_dist;
-    matrix[M, n_trap] log_p;
-    matrix[M, n_trap] logit_p;
+    matrix[M, n_trap] log_lambda;
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
         sq_dist[i, j] = squared_distance(s[i, ], X[j, ]);
-        log_p[i, j] = log_inv_logit(alpha0) - alpha1 * sq_dist[i, j];
-        logit_p[i, j] = log_p[i, j] - log1m_exp(log_p[i, j]);
+        log_lambda[i, j] = alpha0 - alpha1 * sq_dist[i, j];
       }
       lp_if_present[i] = bernoulli_lpmf(1 | psi)
-        + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]);
+        + poisson_log_lpmf(y[i, ] | log_n_occasion + log_lambda[i, ]);
     }
     
     for (i in 1:M) {
