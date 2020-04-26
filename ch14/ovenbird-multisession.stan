@@ -89,10 +89,8 @@ transformed parameters {
         // We don't know the year ID, but we can marginalize over the groups
         // [y | g=1, z=1] [g = 1] + ... + [y | g=n_year, z=1] [g=n_year]
         for (j in 1:n_year) {
-          year_lp_vec[i, j] = categorical_logit_lpmf(j | lp_year);
-          for (k in 1:n_occasion[j]) {
-            year_lp_vec[i, j] += categorical_logit_lpmf(y[i, k] | log_odds);
-          }
+          year_lp_vec[i, j] = categorical_logit_lpmf(j | lp_year)
+            + categorical_logit_lpmf(y[i, 1:n_occasion[j]] | log_odds);
         }
         lp_if_present[i] = log_psi + log_sum_exp(year_lp_vec[i, ]);
       }
