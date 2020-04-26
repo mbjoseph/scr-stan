@@ -51,6 +51,7 @@ k_mat <- matrix(rep(1:nyear, each = M), nrow = M)
 # the log probability to be differentiable, so we'll approximate the 
 # discontinuous step function with a differentiable continuous function. 
 phi <- 20
+
 logistic_fn <- function(x, steepness, midpoint) {
   1 / (1 + exp(-steepness * (x - midpoint)))
 }
