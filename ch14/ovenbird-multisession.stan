@@ -56,7 +56,7 @@ transformed parameters {
   {
     vector[2] s;
     vector[n_trap] dist;
-    vector[n_trap + 1] log_odds;
+    vector[n_trap + 1] logits;
     vector[max_n_occasion] tmp;
 
     for (i in 1:bigM) {
@@ -64,9 +64,9 @@ transformed parameters {
       s[2] = s2[i];
       for (j in 1:n_trap) {
         dist[j] = distance(s, X[j, ]);
-        log_odds[j] = alpha0 - alpha1 * dist[j];
+        logits[j] = alpha0 - alpha1 * dist[j];
       }
-      log_odds[n_trap + 1] = 0;
+      logits[n_trap + 1] = 0;
 
       // Looping over the number occasions in each year deals with the fact
       // that in year 1, we only have 9 occasions, and in the rest 10 occasions.
@@ -78,7 +78,7 @@ transformed parameters {
         // we know the number of sampling occasions to loop over
         for (k in 1:n_occasion[year_id[i]]) {
           if (possibly_alive[i, k]) {
-            tmp[k] = categorical_logit_lpmf(y[i, k] | log_odds);
+            tmp[k] = categorical_logit_lpmf(y[i, k] | logits);
           }
         }
         lp_if_present[i] = log_psi 
@@ -90,7 +90,7 @@ transformed parameters {
         // [y | g=1, z=1] [g = 1] + ... + [y | g=n_year, z=1] [g=n_year]
         for (j in 1:n_year) {
           year_lp_vec[i, j] = categorical_logit_lpmf(j | lp_year)
-            + categorical_logit_lpmf(y[i, 1:n_occasion[j]] | log_odds);
+            + categorical_logit_lpmf(y[i, 1:n_occasion[j]] | logits);
         }
         lp_if_present[i] = log_psi + log_sum_exp(year_lp_vec[i, ]);
       }

@@ -47,23 +47,23 @@ transformed parameters {
   {
     matrix[bigM, 2] s = append_col(s1, s2);
     matrix[bigM, n_trap] dist;
-    matrix[max_n_occasion, n_trap + 1] log_odds[bigM];
+    matrix[max_n_occasion, n_trap + 1] logits;
     vector[max_n_occasion] tmp;
 
     for (i in 1:bigM) {
       for (j in 1:n_trap) {
         dist[i, j] = distance(s[i, ], X[j, ]);
-        log_odds[i, , j] = rep_vector(alpha0 - alpha1 * dist[i, j], 
+        logits[, j] = rep_vector(alpha0 - alpha1 * dist[i, j], 
                                       max_n_occasion);
       }
-      log_odds[i, , n_trap + 1] = rep_vector(0, max_n_occasion);
+      logits[, n_trap + 1] = rep_vector(0, max_n_occasion);
 
       // Looping over the number occasions in each year deals with the fact
       // that in year 1, we only have 9 occasions, and in the rest 10 occasions.
       tmp = rep_vector(0, max_n_occasion);
       for (k in 1:n_occasion[year[i]]) {
         if (not_known_dead[i, k]) { // data from the dead doesn't mean anything
-          tmp[k] = categorical_logit_lpmf(y[i, k] | to_vector(log_odds[i, k,]));
+          tmp[k] = categorical_logit_lpmf(y[i, k] | to_vector(logits[k,]));
         }
       }
       lp_if_present[i] = bernoulli_lpmf(1 | psi[year[i]]) + sum(tmp);
