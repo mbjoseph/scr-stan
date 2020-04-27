@@ -97,7 +97,7 @@ stan_d <- list(
 )
 
 m_init <- stan_model("ch09/multisession-categorical.stan")
-m_fit <- sampling(m_init, data = stan_d, chains = 4)
+m_fit <- sampling(m_init, data = stan_d)
 
 # These results are slightly different from the ones in the book (table 9.2), 
 # but the results in that table seem weird. If M=100 (in each year), 
