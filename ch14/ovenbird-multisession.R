@@ -109,6 +109,5 @@ stan_d <- list(
 m_init <- stan_model("ch14/ovenbird-multisession.stan")
 m_fit <- sampling(m_init, data = stan_d)
 traceplot(m_fit, pars = c("alpha0", "alpha1", "N"))
-print(m_fit, pars = c("alpha0", "alpha1", "N", "beta0", "log_psi"))
+print(m_fit, pars = c("alpha0", "alpha1", "N", "beta0", "psi"))
 # Note that these values are somewhat different than those in the book.
-# I'm not sure why - maybe something to do with the different priors for alpha1?

@@ -54,7 +54,6 @@ transformed parameters {
   
   {
     vector[2] s;
-    vector[n_trap] dist;
     vector[n_trap + 1] logits;
     vector[max_n_occasion] tmp;
 
@@ -62,8 +61,7 @@ transformed parameters {
       s[1] = s1[i];
       s[2] = s2[i];
       for (j in 1:n_trap) {
-        dist[j] = distance(s, X[j, ]);
-        logits[j] = alpha0 - alpha1 * dist[j];
+        logits[j] = alpha0 - alpha1 * distance(s, X[j, ]);
       }
       logits[n_trap + 1] = 0;
 
