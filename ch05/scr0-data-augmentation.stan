@@ -26,6 +26,8 @@ parameters {
 transformed parameters {
   matrix[M, n_trap] logit_p;
   matrix[M, 2] s = append_col(s1, s2);
+  vector[M] lp_if_present;
+  vector[M] log_lik;
   
   {
     matrix[M, n_trap] sq_dist;
@@ -39,6 +41,16 @@ transformed parameters {
     
     log_p = log_inv_logit(alpha0) - alpha1 * sq_dist;
     logit_p = log_p - log1m_exp(log_p);
+    
+    for (i in 1:M) {
+      lp_if_present[i] = bernoulli_lpmf(1 | psi)
+                       + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]);
+      if (sum(y[i, ]) > 0) {
+        log_lik[i] = lp_if_present[i];
+      } else {
+        log_lik[i] = log_sum_exp(lp_if_present[i], bernoulli_lpmf(0 | psi));
+      }
+    }
   }
 }
 
@@ -48,18 +60,7 @@ model {
   alpha1 ~ normal(0, 3);
   
   // likelihood
-  for (i in 1:M) {
-    if (sum(y[i, ]) > 0) {
-      1 ~ bernoulli(psi);
-      y[i, ] ~ binomial_logit_lpmf(n_occasion, logit_p[i, ]);
-    } else {
-      target += log_sum_exp(
-        bernoulli_lpmf(1 | psi) 
-          + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]), 
-        bernoulli_lpmf(0 | psi)
-      );
-    }
-  }
+  target += sum(log_lik);
 }
 
 generated quantities {
@@ -72,13 +73,7 @@ generated quantities {
 
     for (i in 1:n_aug) {
       // lp_present is [z=1][y=0 | z=1] / [y=0] on a log scale
-      lp_present[i] = bernoulli_lpmf(1 | psi) 
-                      + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ])
-                      - log_sum_exp(
-                        bernoulli_lpmf(1 | psi) 
-                        + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]), 
-                        bernoulli_lpmf(0 | psi)
-                      );
+      lp_present[i] = lp_if_present[i] - log_lik[i];
       z_aug[i] = bernoulli_rng(exp(lp_present[i]));
     }
     N = n_obs + sum(z_aug);

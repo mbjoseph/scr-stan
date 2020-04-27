@@ -20,7 +20,7 @@ parameters {
 transformed parameters {
   matrix[n_individual, 2] s = append_col(s1, s2);
   matrix[n_individual, n_trap] logit_p;
-  vector[n_individual] loglik;
+  vector[n_individual] log_lik;
   matrix[n_individual, n_trap] sq_dist;
   
   for (i in 1:n_individual) {
@@ -35,7 +35,7 @@ transformed parameters {
 
     // nonzero encounter history probability
     for (i in 1:n_individual) {
-      loglik[i]= binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]);
+      log_lik[i]= binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, ]);
     }
   }
 }
@@ -45,5 +45,5 @@ model {
   alpha0 ~ normal(0, 3);
   alpha1 ~ normal(0, 3);
   
-  target += sum(loglik);
+  target += sum(log_lik);
 }
