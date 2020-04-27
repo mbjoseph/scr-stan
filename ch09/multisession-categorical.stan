@@ -99,10 +99,7 @@ generated quantities {
       if(observed[i]) {
         z[i] = 1;
       } else {
-        lp_present[i] = lp_if_present[i]
-                        - log_sum_exp(lp_if_present[i], 
-                                      bernoulli_lpmf(0 | psi[year[i]])
-                                      );
+        lp_present[i] = lp_if_present[i] - log_lik[i];
         z[i] = bernoulli_rng(exp(lp_present[i]));
       }
     }
