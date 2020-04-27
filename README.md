@@ -60,3 +60,8 @@ This repo was built in the spirit of the Hiroki Itô's excellent [Stan
 translations of "Bayesian Population Analysis using 
 WinBUGS --- A Hierarchical Perspective" (2012) by Marc Kéry and Michael Schaub](https://github.com/stan-dev/example-models/tree/master/BPA).
 
+### Contributing
+
+If you have questions or find any issues, feel free to open an issue on GitHub: 
+https://github.com/mbjoseph/scr-stan/issues
+
