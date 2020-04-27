@@ -43,6 +43,7 @@ https://sites.google.com/site/spatialcapturerecapture/scrbook-r-package
 
 This repo contains a bunch of Stan translations of JAGS models provided in the
 SCR book. 
+Each example is a self-contained R script, and one or two Stan files.
 
 - [Chapter 5: fully spatial capture-recapture models](ch05)
 - [Chapter 6: likelihood analysis of spatial capture-recapture models](ch06)
