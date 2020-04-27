@@ -50,7 +50,6 @@ transformed parameters {
   vector[bigM] log_lik;
   real<upper = 0> log_psi = log_sum_exp(beta0) - logM;
   real<upper = 0> log1m_psi = log1m_exp(log_psi);
-  vector<upper = 0>[n_year] lp_year = log_softmax(beta0);
   vector[n_year] year_lp_vec[bigM];
   
   {
@@ -82,14 +81,14 @@ transformed parameters {
           }
         }
         lp_if_present[i] = log_psi 
-                           + categorical_logit_lpmf(year_id[i] | lp_year)
+                           + categorical_logit_lpmf(year_id[i] | beta0)
                            + sum(tmp);
       } else {
         // This individual hasn't been observed.
         // We don't know the year ID, but we can marginalize over the groups
         // [y | g=1, z=1] [g = 1] + ... + [y | g=n_year, z=1] [g=n_year]
         for (j in 1:n_year) {
-          year_lp_vec[i, j] = categorical_logit_lpmf(j | lp_year)
+          year_lp_vec[i, j] = categorical_logit_lpmf(j | beta0)
             + categorical_logit_lpmf(y[i, 1:n_occasion[j]] | logits);
         }
         lp_if_present[i] = log_psi + log_sum_exp(year_lp_vec[i, ]);
@@ -117,6 +116,7 @@ model {
 
 generated quantities {
   int N[n_year];
+  real<lower = 0, upper = 1> psi = exp(log_psi);
   
   {
     vector[bigM] lp_present;
@@ -134,7 +134,7 @@ generated quantities {
         // Category probabilities are: 
         //   [C = c | y] [C = c] / [y]
         // = [C = c | y] [C = c] / \sum_{c} [C = c | y] [C = c]
-        c[i] = categorical_rng(softmax(year_lp_vec[i, ]));
+        c[i] = categorical_logit_rng(year_lp_vec[i, ]);
       }
     }
     

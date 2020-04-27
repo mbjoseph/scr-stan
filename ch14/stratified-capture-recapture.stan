@@ -25,7 +25,6 @@ parameters {
 
 transformed parameters {
   vector[n_group] log_lambda = beta0 + beta1 * x;
-  vector<upper = 0>[n_group] lgp = log_softmax(log_lambda);
   real<upper = 0> log_psi = log_sum_exp(log_lambda) - logM;
   real<upper = 0> log1m_psi = log1m_exp(log_psi);
   vector[M] lp_if_present;
@@ -34,7 +33,7 @@ transformed parameters {
   for (i in 1:M) {
     if (observed[i]) {
       lp_if_present[i] = log_psi 
-                  + categorical_logit_lpmf(obs_g[i] | lgp)
+                  + categorical_logit_lpmf(obs_g[i] | log_lambda)
                   + binomial_lpmf(y[i] | n_occasion, p_detect);
       loglik[i] = lp_if_present[i];
     } else {
@@ -75,7 +74,7 @@ generated quantities {
         // [z=1][y=0 | z=1] / [y=0] on a log scale
         lp_present[i] = lp_if_present[i] - loglik[i];
         z[i] = bernoulli_rng(exp(lp_present[i]));
-        g[i] = categorical_logit_rng(lgp);
+        g[i] = categorical_logit_rng(log_lambda);
       }
     }
     N = sum(z);
