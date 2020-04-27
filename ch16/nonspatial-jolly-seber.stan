@@ -8,7 +8,7 @@
 // Observations: 
 // 1 detected
 // 2 not detected
-// 3 NA (no sampling occasion took place)
+// 0 NA (no sampling occasion took place)
 
 data {
   int<lower = 0> M;
