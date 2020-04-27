@@ -24,7 +24,7 @@ There are some good reasons to use Stan:
 - Stan can check your data (e.g., you can 
 set bounds on data, and enforce a variety of constraints on data types, 
 shapes of arrays, etc.). 
-- Stan has good sampling diagnostics (e.g., you'll be more likely to know when sampling from the posterior has gone awry).
+- Stan has good [sampling diagnostics and warnings](https://mc-stan.org/misc/warnings.html) (e.g., you'll be more likely to know when sampling from the posterior has gone awry).
 - Stan has a healthy and active user community (e.g., on the [Stan Forums](https://discourse.mc-stan.org/)).
 - Stan documentation is 👍: https://mc-stan.org/users/documentation/
 
