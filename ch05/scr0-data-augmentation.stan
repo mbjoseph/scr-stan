@@ -1,17 +1,12 @@
 
 data {
   int<lower = 1> M;
-  int<lower = 0> n_aug;
   int<lower = 1> n_trap;
   int<lower = 1> n_occasion;
   matrix[n_trap, 2] X;
   int<lower = 0, upper = n_occasion> y[M, n_trap];
   vector[2] xlim;
   vector[2] ylim;
-}
-
-transformed data {
-  int<lower = 0, upper = M> n_obs = M - n_aug;
 }
 
 parameters {
@@ -64,18 +59,22 @@ model {
 }
 
 generated quantities {
-  int<lower = n_obs, upper = M> N;
+  int<upper = M> N;
   
   {
-    matrix[M, n_trap] p = inv_logit(logit_p);
-    vector[n_aug] lp_present;
-    int z_aug[n_aug];
-
-    for (i in 1:n_aug) {
-      // lp_present is [z=1][y=0 | z=1] / [y=0] on a log scale
-      lp_present[i] = lp_if_present[i] - log_lik[i];
-      z_aug[i] = bernoulli_rng(exp(lp_present[i]));
+    real lp_present;
+    int z[M];
+    
+    N = 0;
+    for (i in 1:M) {
+      if (sum(y[i, ]) > 0) {
+        z[i] = 1;
+      } else {
+        // lp_present is [z=1][y=0 | z=1] / [y=0] on a log scale
+        lp_present = lp_if_present[i] - log_lik[i];
+        z[i] = bernoulli_rng(exp(lp_present));
+      }
+      N += z[i];
     }
-    N = n_obs + sum(z_aug);
   }
 }

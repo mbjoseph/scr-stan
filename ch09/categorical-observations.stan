@@ -36,16 +36,16 @@ transformed parameters {
   
   {
     matrix[M, n_trap] dist;
-    matrix[M, n_trap + 1] log_odds; // last element is "not detected"
+    matrix[M, n_trap + 1] logits; // last element is "not detected"
 
     for (i in 1:M) {
       for (j in 1:n_trap) {
         dist[i, j] = distance(s[i, ], X[j, ]);
-        log_odds[i, j] = alpha0 - alpha1 * dist[i, j];
+        logits[i, j] = alpha0 - alpha1 * dist[i, j];
       }
-      log_odds[i, n_trap + 1] = 0;
+      logits[i, n_trap + 1] = 0;
       lp_if_present[i] = bernoulli_lpmf(1 | psi)
-        + categorical_logit_lpmf(y[i, ] | to_vector(log_odds[i, ]));
+        + categorical_logit_lpmf(y[i, ] | to_vector(logits[i, ]));
       if (observed[i]) {
         log_lik[i] = lp_if_present[i];
       } else {
@@ -76,10 +76,7 @@ generated quantities {
       if(observed[i]) {
         z[i] = 1;
       } else {
-        lp_present[i] = lp_if_present[i]
-                        - log_sum_exp(lp_if_present[i], 
-                                      bernoulli_lpmf(0 | psi)
-                                      );
+        lp_present[i] = lp_if_present[i] - log_lik[i];
         z[i] = bernoulli_rng(exp(lp_present[i]));
       }
     }

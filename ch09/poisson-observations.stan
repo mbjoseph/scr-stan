@@ -74,17 +74,14 @@ generated quantities {
   int N;
   
   {
-    vector[M] lp_present; // [z=1][y=0 | z=1] / [y=0] on a log scale
+    vector[M] lp_present;
     int z[M];
 
     for (i in 1:M) {
       if(observed[i]) {
         z[i] = 1;
       } else {
-        lp_present[i] = lp_if_present[i]
-                        - log_sum_exp(lp_if_present[i], 
-                                      bernoulli_lpmf(0 | psi)
-                                      );
+        lp_present[i] = lp_if_present[i] - log_lik[i];
         z[i] = bernoulli_rng(exp(lp_present[i]));
       }
     }

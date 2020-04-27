@@ -42,7 +42,8 @@ transformed parameters {
   real log1m_psi = log1m(psi);
   matrix[n_grid, n_trap] log_p = log_inv_logit(alpha0) - alpha1 * sq_dist;
   matrix[n_grid, n_trap] logit_p = log_p - log1m_exp(log_p);
-  vector[M] loglik;
+  vector[M] lp_if_present;
+  vector[M] log_lik;
 
   {
     vector[n_grid] tmp;
@@ -51,11 +52,11 @@ transformed parameters {
       for (j in 1:n_grid) {
         tmp[j] = binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[j, ]);
       }
+      lp_if_present[i] = log_psi + log_sum_exp(tmp) - log_n_grid;
       if (ever_observed[i]) {
-        loglik[i] = log_psi + log_sum_exp(tmp) - log_n_grid;
+        log_lik[i] = lp_if_present[i];
       } else {
-        loglik[i] = log_sum_exp(log_psi + log_sum_exp(tmp) - log_n_grid, 
-                                log1m_psi);
+        log_lik[i] = log_sum_exp(lp_if_present[i], log1m_psi);
       }
     }
   }
@@ -67,7 +68,7 @@ model {
   alpha1 ~ normal(0, 3);
   
   // likelihood
-  target += sum(loglik);
+  target += sum(log_lik);
 }
 
 

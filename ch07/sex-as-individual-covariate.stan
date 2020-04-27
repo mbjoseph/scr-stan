@@ -41,6 +41,7 @@ parameters {
 transformed parameters {
   matrix[M, 2] s = append_col(s1, s2);
   vector[M] lp_if_present;
+  vector[M] log_lik;
   
   {
     matrix[M, n_trap] sq_dist;
@@ -61,6 +62,7 @@ transformed parameters {
         lp_if_present[i] = bernoulli_lpmf(1 | psi)
           + bernoulli_lpmf(is_female | psi_sex)
           + binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, , sex[i]]);
+        log_lik[i] = lp_if_present[i];
       } else {
         // augmented individual of unknown sex
         lp_if_present[i] = bernoulli_lpmf(1 | psi)
@@ -69,6 +71,7 @@ transformed parameters {
               binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, , 2]), // ♀
               binomial_logit_lpmf(y[i, ] | n_occasion, logit_p[i, , 1])  // ♂
             );
+        log_lik[i] = log_sum_exp(lp_if_present[i], bernoulli_lpmf(0 | psi));
       }
     }
   }
@@ -80,13 +83,7 @@ model {
   alpha1 ~ normal(0, 3);
   
   // likelihood
-  for (i in 1:M) {
-    if (observed[i]) {
-      target += lp_if_present[i];
-    } else {
-      target += log_sum_exp(lp_if_present[i], bernoulli_lpmf(0 | psi));
-    }
-  }
+  target += sum(log_lik);
 }
 
 
@@ -101,10 +98,7 @@ generated quantities {
       if(observed[i]) {
         z[i] = 1;
       } else {
-        lp_present[i] = lp_if_present[i]
-                        - log_sum_exp(lp_if_present[i], 
-                                      bernoulli_lpmf(0 | psi)
-                                      );
+        lp_present[i] = lp_if_present[i] - log_lik[i];
         z[i] = bernoulli_rng(exp(lp_present[i]));
       }
     }
