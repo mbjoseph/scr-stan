@@ -9,7 +9,7 @@ sex-varying encounter models.
 the use of an exponential encounter function + integrated likelihood, 
 marginalizing over `s`. 
 
-2. See [exponential-encounter-fn-s-data-aug.R](exponential-encounter-fn-s-data-aug.R)
+2. See [exponential-encounter-fn-data-aug.R](exponential-encounter-fn-data-aug.R)
 for a model that uses data augmentation, keeps `s` in the joint probability 
 (instead of marginalizing), and uses an exponential encounter function. 
 
