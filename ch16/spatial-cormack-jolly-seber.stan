@@ -87,8 +87,6 @@ transformed parameters {
       gam[first_capture[i], 2] = 1;
       gam[first_capture[i], 3] = 0;
   
-      // we iterate to T + 1, because we inserted a dummy period where 
-      // every individual is in the "not tracked" state
       for (t in (first_capture[i] + 1):T) {
         for (k in 1:3) {
           for (j in 1:3) {
