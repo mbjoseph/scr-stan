@@ -16,7 +16,7 @@ The emphasis is on translating models from [JAGS](http://mcmc-jags.sourceforge.n
 ### Why?
 
 Stan is a flexible language that enables full Bayesian inference with dynamic
-Hamiltonion Monte Carlo, approximate Bayesian inference with automatic
+Hamiltonian Monte Carlo, approximate Bayesian inference with automatic
 differentiation variational inference, and optimization (e.g., penalized 
 maximum likelihood).
 
