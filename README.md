@@ -41,6 +41,12 @@ Hopefully these Stan implementations lower the barrier to entry.
 These examples use the `scrbook` R package, which you can download from here: 
 https://sites.google.com/site/spatialcapturerecapture/scrbook-r-package
 
+The remaining dependencies are on CRAN, and you can install them from R with:
+
+```r
+devtools::install_deps()
+```
+
 ### What's here
 
 This repo contains a bunch of Stan translations of JAGS models provided in the

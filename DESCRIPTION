@@ -1,0 +1,28 @@
+Type: Compendium
+Package: scrstan
+Title: Spatial capture-recapture models in Stan
+Version: 0.0.1
+Authors@R: 
+    person(given = "Max",
+           family = "Joseph",
+           role = c("aut", "cre"),
+           email = "maxwell.b.joseph@colorado.edu",
+           comment = c(ORCID = "0000-0002-7745-9990"))
+Description: Stan translations of spatial capture recapture models from the 
+    book "Spatial Capture-Recapture", Royle JA, Chandler RB, Sollmann R, 
+    Gardner B. Academic Press; 2013 Aug 27.
+License: MIT
+Depends:
+    dplyr,
+    ggplot2,
+    parallel,
+    patchwork,
+    reshape,
+    rgeos,
+    rstan,
+    loo,
+    secr,
+    sf,
+    sp
+Encoding: UTF-8
+LazyData: true
