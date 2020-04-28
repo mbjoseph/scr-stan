@@ -22,13 +22,11 @@ maximum likelihood).
 
 There are some good reasons to use Stan: 
 
-- Stan is fast.
-- Stan can check your data (e.g., you can 
-set bounds on data, and enforce a variety of constraints on data types, 
-shapes of arrays, etc.). 
-- Stan has good [sampling diagnostics and warnings](https://mc-stan.org/misc/warnings.html) (e.g., you'll be more likely to know when sampling from the posterior has gone awry).
-- Stan has a healthy and active user community (e.g., on the [Stan Forums](https://discourse.mc-stan.org/)).
-- Stan documentation is 👍: https://mc-stan.org/users/documentation/
+- Stan is fast
+- Stan has good [documentation](https://mc-stan.org/users/documentation/)
+- Stan helps you avoid errors with [data types](https://mc-stan.org/docs/2_23/reference-manual/univariate-data-types-and-variable-declarations.html)
+- Stan has good [sampling diagnostics and warnings](https://mc-stan.org/misc/warnings.html)
+- Stan has a healthy [user community](https://discourse.mc-stan.org/)
 
 Using Stan can be hard for ecologists with experience in JAGS/BUGS/NIMBLE, because 
 [you have to marginalize over discrete parameters](https://mc-stan.org/docs/2_23/stan-users-guide/latent-discrete-parameterization.html). 
