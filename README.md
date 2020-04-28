@@ -1,4 +1,6 @@
 
+![](activity-center.png)
+
 # scr-stan: spatial capture-recapture examples in Stan
 
 <!-- badges: start -->
