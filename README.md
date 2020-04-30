@@ -31,6 +31,7 @@ There are some good reasons to use Stan:
 Using Stan can be hard for ecologists with experience in JAGS/BUGS/NIMBLE, because 
 [you have to marginalize over discrete parameters](https://mc-stan.org/docs/2_23/stan-users-guide/latent-discrete-parameterization.html). 
 But, you don't have to start from scratch. 
+This repo provide a variety of examples, and if you've never marginalized over discrete parameters to implement a model in Stan, you might find [this tutorial](https://mbjoseph.github.io/posts/2020-04-28-a-step-by-step-guide-to-marginalizing-over-discrete-parameters-for-ecologists-using-stan/) helpful. 
 
 Hopefully these Stan implementations lower the barrier to entry.
 
