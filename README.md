@@ -4,7 +4,7 @@
 # scr-stan: spatial capture-recapture examples in Stan
 
 <!-- badges: start -->
-![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 <!-- badges: end -->
 
 The goal of scr-stan is to provide Stan implementations for a variety of 
